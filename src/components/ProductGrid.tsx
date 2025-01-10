@@ -53,10 +53,10 @@ const NICHES = ["gambling", "trading", "betting", "social media", "sales"];
 export function ProductGrid() {
   const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedNiche, setSelectedNiche] = useState<string>("");
+  const [selectedNiche, setSelectedNiche] = useState<string>("all");
 
   const filteredProducts = MOCK_PRODUCTS.filter((product) => {
-    return !selectedNiche || product.niche === selectedNiche;
+    return selectedNiche === "all" || product.niche === selectedNiche;
   });
 
   const handleViewInsights = (product: Product) => {
@@ -81,7 +81,7 @@ export function ProductGrid() {
             <SelectValue placeholder="Select niche" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All niches</SelectItem>
+            <SelectItem value="all">All niches</SelectItem>
             {NICHES.map((niche) => (
               <SelectItem key={niche} value={niche}>
                 {niche}
