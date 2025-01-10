@@ -4,7 +4,13 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Product {
   id: string;
@@ -40,40 +46,18 @@ const MOCK_PRODUCTS: Product[] = [
     ranking: 42,
     trafficSource: "tiktok"
   },
-  // Add more mock products as needed
 ];
 
 const NICHES = ["gambling", "trading", "betting", "social media", "sales"];
-const TRAFFIC_SOURCES = ["organic", "youtube", "tiktok", "instagram"];
 
 export function ProductGrid() {
   const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedNiches, setSelectedNiches] = useState<string[]>([]);
-  const [selectedTrafficSources, setSelectedTrafficSources] = useState<string[]>([]);
+  const [selectedNiche, setSelectedNiche] = useState<string>("");
 
   const filteredProducts = MOCK_PRODUCTS.filter((product) => {
-    const nicheMatch = selectedNiches.length === 0 || selectedNiches.includes(product.niche);
-    const trafficMatch = selectedTrafficSources.length === 0 || 
-      (product.trafficSource && selectedTrafficSources.includes(product.trafficSource));
-    return nicheMatch && trafficMatch;
+    return !selectedNiche || product.niche === selectedNiche;
   });
-
-  const handleNicheToggle = (niche: string) => {
-    setSelectedNiches(prev =>
-      prev.includes(niche)
-        ? prev.filter(n => n !== niche)
-        : [...prev, niche]
-    );
-  };
-
-  const handleTrafficSourceToggle = (source: string) => {
-    setSelectedTrafficSources(prev =>
-      prev.includes(source)
-        ? prev.filter(s => s !== source)
-        : [...prev, source]
-    );
-  };
 
   const handleViewInsights = (product: Product) => {
     navigate("/insights", { state: { product } });
@@ -88,48 +72,23 @@ export function ProductGrid() {
         </p>
       </div>
 
-      <div className="space-y-6 mb-8">
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Niches</h3>
-          <div className="flex flex-wrap gap-2">
+      <div className="mb-8">
+        <Select
+          value={selectedNiche}
+          onValueChange={setSelectedNiche}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select niche" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All niches</SelectItem>
             {NICHES.map((niche) => (
-              <div key={niche} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`niche-${niche}`}
-                  checked={selectedNiches.includes(niche)}
-                  onCheckedChange={() => handleNicheToggle(niche)}
-                />
-                <label
-                  htmlFor={`niche-${niche}`}
-                  className="text-sm text-slate-400 capitalize cursor-pointer"
-                >
-                  {niche}
-                </label>
-              </div>
+              <SelectItem key={niche} value={niche}>
+                {niche}
+              </SelectItem>
             ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Traffic Sources</h3>
-          <div className="flex flex-wrap gap-2">
-            {TRAFFIC_SOURCES.map((source) => (
-              <div key={source} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`source-${source}`}
-                  checked={selectedTrafficSources.includes(source)}
-                  onCheckedChange={() => handleTrafficSourceToggle(source)}
-                />
-                <label
-                  htmlFor={`source-${source}`}
-                  className="text-sm text-slate-400 capitalize cursor-pointer"
-                >
-                  {source}
-                </label>
-              </div>
-            ))}
-          </div>
-        </div>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
