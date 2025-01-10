@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ExternalLink } from "lucide-react";
 
 interface Product {
   id: string;
@@ -9,6 +9,10 @@ interface Product {
   niche: string;
   dailyRevenue: number;
   description: string;
+  membersCount?: number;
+  ranking?: number;
+  socialLinks?: string[];
+  trafficSource?: string;
 }
 
 interface ProductCardProps {
@@ -23,9 +27,16 @@ export function ProductCard({ product, onViewInsights }: ProductCardProps) {
         <div className="flex items-start justify-between">
           <div>
             <h3 className="font-semibold text-lg text-white mb-1">{product.title}</h3>
-            <Badge variant="secondary" className="bg-slate-800 text-teal-400">
-              {product.niche}
-            </Badge>
+            <div className="flex gap-2">
+              <Badge variant="secondary" className="bg-slate-800 text-teal-400">
+                {product.niche}
+              </Badge>
+              {product.trafficSource && (
+                <Badge variant="outline" className="text-slate-400">
+                  {product.trafficSource}
+                </Badge>
+              )}
+            </div>
           </div>
           <Button
             variant="ghost"
@@ -33,7 +44,7 @@ export function ProductCard({ product, onViewInsights }: ProductCardProps) {
             className="text-slate-400 hover:text-white"
             onClick={() => onViewInsights(product)}
           >
-            <ChevronDown className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4" />
           </Button>
         </div>
         
