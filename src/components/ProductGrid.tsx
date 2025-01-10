@@ -53,14 +53,24 @@ const NICHES = ["gambling", "trading", "betting", "social media", "sales"];
 export function ProductGrid() {
   const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedNiche, setSelectedNiche] = useState<string>("all");
+  const [selectedNiches, setSelectedNiches] = useState<string[]>([]);
 
   const filteredProducts = MOCK_PRODUCTS.filter((product) => {
-    return selectedNiche === "all" || product.niche === selectedNiche;
+    return selectedNiches.length === 0 || selectedNiches.includes(product.niche);
   });
 
   const handleViewInsights = (product: Product) => {
     navigate("/insights", { state: { product } });
+  };
+
+  const handleNicheChange = (value: string) => {
+    setSelectedNiches(prev => {
+      if (value === "all") return [];
+      if (prev.includes(value)) {
+        return prev.filter(niche => niche !== value);
+      }
+      return [...prev, value];
+    });
   };
 
   return (
@@ -74,21 +84,35 @@ export function ProductGrid() {
 
       <div className="mb-8">
         <Select
-          value={selectedNiche}
-          onValueChange={setSelectedNiche}
+          value={selectedNiches.length === 0 ? "all" : selectedNiches[0]}
+          onValueChange={handleNicheChange}
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select niche" />
+            <SelectValue placeholder="Select niches" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All niches</SelectItem>
             {NICHES.map((niche) => (
               <SelectItem key={niche} value={niche}>
-                {niche}
+                {niche} {selectedNiches.includes(niche) && "✓"}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        {selectedNiches.length > 0 && (
+          <div className="mt-2 flex gap-2 flex-wrap">
+            {selectedNiches.map(niche => (
+              <Badge 
+                key={niche} 
+                variant="secondary"
+                className="cursor-pointer"
+                onClick={() => handleNicheChange(niche)}
+              >
+                {niche} ×
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
